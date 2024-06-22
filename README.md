@@ -9,3 +9,7 @@ Feel free to explore the different folders and files to find the solutions for e
 If you have any questions or need further clarification, please don't hesitate to reach out.
 
 Happy coding!
+
+## Authors
+
+[@Cheibany](https://github.com/Cheibany)
