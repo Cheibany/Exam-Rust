@@ -21,12 +21,12 @@ impl Table {
 
 impl fmt::Display for Table {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        if self.headers.is_empty() && self.body.is_empty() {
+        if self.headers.is_empty() {
             return Ok(());
         }
 
-        let mut col_widths: Vec<usize> = self.headers.iter().map(|h| h.len()).collect();
-
+        // Calculate column widths
+        let mut col_widths = self.headers.iter().map(|h| h.len()).collect::<Vec<_>>();
         for row in &self.body {
             for (i, cell) in row.iter().enumerate() {
                 if cell.len() > col_widths[i] {
@@ -35,29 +35,25 @@ impl fmt::Display for Table {
             }
         }
 
-        let print_row = |row: &[String], col_widths: &[usize]| -> String {
-            let mut result = String::new();
-            result.push('|');
-            for (i, cell) in row.iter().enumerate() {
-                let width = col_widths[i];
-                let pad_left = (width - cell.len()) / 2;
-                let pad_right = width - cell.len() - pad_left;
-                result.push_str(&format!(" {}{}{} |", " ".repeat(pad_left), cell, " ".repeat(pad_right)));
-            }
-            result
+        // Helper function to format a row
+        let format_row = |row: &[String]| {
+            row.iter().enumerate().map(|(i, cell)| {
+                format!("{:^width$}", cell, width = col_widths[i])
+            }).collect::<Vec<_>>().join(" | ")
         };
 
-        let header = print_row(&self.headers, &col_widths);
-        let separator: String = col_widths.iter()
-            .map(|&width| format!("|{}+", "-".repeat(width + 2)))
-            .collect::<Vec<_>>().join("");
-        let separator = format!("{}|", separator.trim_end_matches('+'));
+        // Print headers
+        let header_row = format_row(&self.headers);
+        writeln!(f, "| {} |", header_row)?;
 
-        writeln!(f, "{}", header)?;
-        writeln!(f, "{}", separator)?;
+        // Print separator
+        let separator = col_widths.iter().map(|w| "-".repeat(*w)).collect::<Vec<_>>().join("-+-");
+        writeln!(f, "|-{}-|", separator)?;
 
+        // Print rows
         for row in &self.body {
-            writeln!(f, "{}", print_row(row, &col_widths))?;
+            let row_str = format_row(row);
+            writeln!(f, "| {} |", row_str)?;
         }
 
         Ok(())
