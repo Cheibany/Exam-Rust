@@ -1,8 +1,8 @@
 #[derive(Debug, PartialEq, Eq)]
 pub struct OfficeWorker {
-    name: String,
-    age: u32,
-    role: WorkerRole,
+    pub name: String,
+    pub age: u32,
+    pub role: WorkerRole,
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -12,29 +12,24 @@ pub enum WorkerRole {
     Guest,
 }
 
-impl From<&str> for WorkerRole {
-    fn from(role: &str) -> Self {
-        match role.to_lowercase().as_str() {
-            "admin" => WorkerRole::Admin,
-            "user" => WorkerRole::User,
-            "guest" => WorkerRole::Guest,
-            _ => panic!("Invalid role"),
-        }
-    }
-}
-
 impl From<&str> for OfficeWorker {
     fn from(s: &str) -> Self {
         let parts: Vec<&str> = s.split(',').collect();
-        if parts.len() != 3 {
-            panic!("Invalid input format");
+        OfficeWorker {
+            name: parts[0].to_string(),
+            age: parts[1].parse().unwrap(),
+            role: WorkerRole::from(parts[2]),
         }
-
-        let name = parts[0].to_string();
-        let age = parts[1].parse::<u32>().expect("Invalid age");
-        let role = WorkerRole::from(parts[2]);
-
-        OfficeWorker { name, age, role }
     }
 }
 
+impl From<&str> for WorkerRole {
+    fn from(s: &str) -> Self {
+        match s {
+            "admin" => WorkerRole::Admin,
+            "user" => WorkerRole::User,
+            "guest" => WorkerRole::Guest,
+            _ => unreachable!(),
+        }
+    }
+}

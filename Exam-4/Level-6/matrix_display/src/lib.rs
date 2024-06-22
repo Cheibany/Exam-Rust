@@ -1,25 +1,28 @@
+#[derive(Debug,Clone)]
 pub struct Matrix(pub Vec<Vec<i32>>);
-
 impl Matrix {
     pub fn new(slice: &[&[i32]]) -> Self {
-        let matrix = slice.iter().map(|&row| row.to_vec()).collect();
-        Matrix(matrix)
+        let t:Vec<Vec<i32>>=slice.iter().map(|&vec| vec.to_vec()).collect();
+        Matrix(t)
     }
 }
-
 use std::fmt;
-
 impl fmt::Display for Matrix {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        for row in &self.0 {
-            write!(f, "(")?;
-            for (i, val) in row.iter().enumerate() {
-                if i != 0 {
-                    write!(f, " ")?;
-                }
-                write!(f, "{}", val)?;
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        for i in 0..self.0.len(){
+        write!(f,"(")?;
+        for j in 0..self.0[i].len(){
+            if j != self.0[i].len()-1{
+                write!(f,"{} ",self.0[i][j])?;
+            }else{
+                write!(f,"{}",self.0[i][j])?;
             }
-            write!(f, ")\n")?;
+        }
+        if i != self.0.len()-1{
+            write!(f,")\n")?;
+        }else{
+            write!(f,")")?;
+        }
         }
         Ok(())
     }
